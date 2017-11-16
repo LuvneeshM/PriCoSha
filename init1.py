@@ -6,13 +6,14 @@ import pymysql.cursors
 app = Flask(__name__)
 
 #Configure MySQL
+'''
 conn = pymysql.connect(host='localhost',
                        user='root',
                        password='root',
                        db='meetup3',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
-
+'''
 #Define a route to hello function
 @app.route('/')
 def hello():
