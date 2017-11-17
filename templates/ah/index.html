@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Steamed Cabbage Recipe</title>
+    <meta name="description" content="Cabbage Recipes">
+    <meta name="keywords" content="Recipe, Cabbage, Food, Vegetarian">
+    <meta name="author" content="Luvneesh">
+    <style type="text/css">
+    body {
+        font-family: Georgia, Arial, serif;
+    }
+    
+    h1 {
+        text-align: center;
+        color: rgba(154, 57, 12, 0.8);
+    }
+    /*header navigation bar*/
+    /*will be horizontal */
+    
+    .nav_bar_header {
+        /* get rid of padding */
+        margin: 0;
+        padding: 0;
+        /*background color is grayish*/
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .nav_bar_ul {
+        /* get rid of bullets */
+        padding: 0px;
+        list-style-type: none;
+        overflow: hidden;
+        /* hide the overflow of block element*/
+    }
+    
+    .nav_bar_li {
+        width: 25%;
+        float: left/* stack to the left as long as there is space using float  */
+    }
+    
+    .nav_bar_a {
+        display: block;
+        color: rgb(255, 255, 255);
+        /* color of text to see on grayish backround */
+        text-align: center;
+        padding: 3% 3%;
+        text-decoration: none;
+        border-right: 1px solid rgb(255, 255, 255);
+        /*give borders to each	*/
+    }
+    
+    .nav_bar_a:hover {
+        background-color: rgb(0, 0, 0);
+        /*hover over changes color a bit*/
+    }
+    
+    .clear_fix::after {
+        display: block;
+        clear: both;
+        /* ensure some older compatability */
+        height: 0;
+        font-size: 0;
+        content: " ";
+        /* extra backup */
+        visibility: hidden;
+    }
+    /*for recipe*/
+    
+    .vegetarian {
+        padding: 0px 20px;
+    }
+    
+    .meat {
+        padding: 0px 20px;
+    }
+    
+    h2 {
+        color: rgba(33, 89, 97, 0.7);
+    }
+    /*for the header part of each recipe*/
+    
+    .recipe_sub_head {
+        text-align: center;
+        padding-bottom: 10px;
+    }
+    /* for the ingredient section */
+    
+    .ingredient_header_with_list {
+        float: left;
+        padding: 10px;
+        margin: 0px;
+    }
+    
+    h3 {
+        margin: 0px;
+    }
+    
+    .ingredient_image {
+        float: left;
+        text-align: center;
+    }
+    
+    .image_caption {
+        margin: 0px;
+    }
+    /* directions section */
+    
+    .directions_container {
+        padding: 10px;
+        margin: 0px;
+    }
+    /*footer*/
+    .people {
+        float: left;
+        text-align: left;
+        padding: 20px;
+    }
+    
+    p {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+    
+    .social_links {
+        float: left;
+        text-align: left;
+        padding: 20px;
+    }
+    .back_up{
+		padding-left: 20px;
+		text-align: right;
+    }
+    </style>
+    <!-- Used for soical link icons -->
+    <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
+    <!-- a bit of css -->
+</head>
+
+<body>
+    <!-- header + nav bar of page -->
+    <header>
+        <h1>Steamed Cabbage Recipes</h1>
+        <nav class="nav_bar_header">
+            <ul class="nav_bar_ul">
+                <li class="nav_bar_li"><a class="nav_bar_a clear_fix" href="#">Home</a></li>
+                <li class="nav_bar_li"><a class="nav_bar_a clear_fix" href="#">Recipes</a></li>
+                <li class="nav_bar_li"><a class="nav_bar_a clear_fix" href="#">About</a></li>
+                <li class="nav_bar_li"><a class="nav_bar_a clear_fix" href="#">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+    <!-- main content of page -->
+    <main>
+        <div class="vegetarian">
+            <!-- sub_head -->
+            <div class="recipe_sub_head">
+                <h2>Steammed Cabbage with Tofu Pepper Filling</h2>
+                <figure>
+                    <img src="http://placehold.it/300X300">
+                    <figcaption>A quick, easy, and healthy vegertarian tofu and pepper filling wrapped in a sheet of cabbage.</figcaption>
+                </figure>
+            </div>
+            <!-- Ingredients -->
+            <div class="ingredients_container clear_fix">
+                <div class="ingredient_header_with_list">
+                    <h3>Ingredients:</h3>
+                    <ul>
+                        <li>Cabbage</li>
+                        <li>Salt(To taste)</li>
+                        <li>1 box of tofu</li>
+                        <li>1 Onion</li>
+                        <li>1 Table Spoon of Sesame Oil</li>
+                        <li>1/2 Cup of Soy Sauce</li>
+                        <li>1/2 Cup of Honey Sauce</li>
+                        <li>1 or 2 Peppers (any kind, i.e Bell Pepper of Fresno)</li>
+                    </ul>
+                </div>
+                <!-- image of all ingredients -->
+                <figure class="ingredient_image">
+                    <img src="http://placehold.it/200X200">
+                    <figcaption>
+                        <p class="image_caption">All ingredients laid out.</p>
+                    </figcaption>
+                </figure>
+            </div>
+            <!-- directions -->
+            <div class="directions_container">
+                <h3>Directions:</h3>
+                <ol>
+                    <li>Set a pan of water with salt to boil. Take 1 sheet of cabbage and boil in the salt water until soft.</li>
+                    <li>Crush 1 box of Tofu and chop peppers.</li>
+                    <li>Cut and dice 1 onion into small pieces.</li>
+                    <li>Saute tofu, chop peppers, and onion in pan with 1 table spoon of sesame oil.</li>
+                    <li>Add 0.5 cup of Soy Sauce to the pan and mix.</li>
+                    <li>Stuff filling into cabbage and steam for 10 minutes.</li>
+                    <li>Serve with soy sauce and honey sauce. </li>
+                </ol>
+            </div>
+        </div>
+        <div class="meat">
+            <!-- sub_head -->
+            <div class="recipe_sub_head">
+                <h2>Vietnamese Salad Rolls</h2>
+                <figure>
+                    <img src="http://placehold.it/300X300">
+                    <figcaption>A quick, easy, and healthy shrimp red lettuce wrap.</figcaption>
+                </figure>
+            </div>
+            <!-- Ingredients -->
+            <div class="ingredients_container clear_fix">
+                <div class="ingredient_header_with_list">
+                    <h3>Ingrediants:</h3>
+                    <ul>
+                        <li>Red Lettuce</li>
+                        <li>Salt(To taste)</li>
+                        <li>1 lb. Rice stick noodles</li>
+                        <li>1 lb. Carrots, peeled, finely julienned</li>
+                        <li>Lime Juice</li>
+                        <li>Shrimp</li>
+                        <li>1 bunch of Cilantro leaves</li>
+                        <li>1 bunch of Mint leaves</li>
+                        <li>1 bunch of thai basil leaves</li>
+                        <li>1/2 Cup of Soy Sauce</li>
+                        <li>1/2 Cup of Honey Sauce</li>
+                    </ul>
+                </div>
+                <!-- image of all ingredients -->
+                <figure class="ingredient_image">
+                    <img src="http://placehold.it/200X200">
+                    <figcaption>
+                        <p class="image_caption">All ingredients laid out.</p>
+                    </figcaption>
+                </figure>
+            </div>
+            <!-- directions -->
+            <div class="directions_container">
+                <h3>Directions:</h3>
+                <ol>
+                    <li> Cook rice noodle for 3 minutes in boiling water. Take out, shock and drain.</li>
+                    <li> Blanch shrimp with shell on in 160º water until done. Shock and peel the shells off. Slice shrimp lengthwise in half and devein.</li>
+                    <li> Marinate julienne carrots with salt for 10 minutes, squeeze out excess liquid. Add lime juice to drained carrots.</li>
+                    <li>Set a pan of water with salt to boil. Take 1 sheet of cabbage and boil in the salt water until soft.</li>
+                    <li>Stuff shrimp, carrots, cilantro leaves, mint leaves into cabbage and steam for 10 minutes.</li>
+                    <li>Serve with thai basil leaves on top and with soy sauce and honey sauce on side. </li>
+                </ol>
+            </div>
+        </div>
+        <hr>
+    </main>
+    <!-- footer stuff -->
+    <footer>
+        <div class="clear_fix">
+            <div class="people clear_fix">
+                <p>Website Designer: Luvneesh Mugrai</p>
+                <p>Chef: Nelson Wu</p>
+            </div>
+            <!-- social links using fontawesome.io -->
+            <div class="social_links clear_fix">
+                <a href="https://www.facebook.com/ThisIsMeT" target="_blank">
+                    <i class="fa fa-facebook-square" aria-hidden="true"></i></a>
+                <a href="https://github.com/LuvneeshM" target="_blank">
+                    <i class="fa fa-github-square" aria-hidden="true"></i></a>
+            </div>
+        </div>
+        <div class="back_up">
+            <a href="index.html">Back to Top</a>
+        </div>
+    </footer>
+</body>
+
+</html>

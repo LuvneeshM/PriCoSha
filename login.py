@@ -1,6 +1,7 @@
 #Import Flask Library
-from flask import *
+from flask import Flask, render_template, request, session, url_for, redirect
 import pymysql.cursors
+
 
 app = Flask(__name__)
 
@@ -37,7 +38,7 @@ def loginAuth():
 	#cursor used to send queries
 	cursor = conn.cursor()
 	#executes query
-	query = 'SELECT * FROM person WHERE username = %s and password = %s'
+	query = 'SELECT * FROM person WHERE username = %s and password = md5(%s)'
 	cursor.execute(query, (username, password))
 	#stores the results in a variable
 	data = cursor.fetchone()
@@ -77,7 +78,7 @@ def registerAuth():
 		error = "This user already exists"
 		return render_template('register.html', error = error)
 	else:
-		ins = 'INSERT INTO person VALUES(%s, %s, %s, %s)'
+		ins = 'INSERT INTO person VALUES(%s, md5(%s), %s, %s)'
 		cursor.execute(ins, (username, password, firstname, lastname))
 		conn.commit()
 		cursor.close()
@@ -87,12 +88,12 @@ def registerAuth():
 def home():
 	username = session['username']
 	cursor = conn.cursor();
-	query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
-	cursor.execute(query, (username))
-	data = cursor.fetchall()
+	#query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
+	#cursor.execute(query, (username))
+	#data = cursor.fetchall()
 	cursor.close()
-	return render_template('home.html', username=username, posts=data)
-
+	#return render_template('home.html', username=username, posts=data)
+	return ('templates/ah/index.html')
 		
 @app.route('/post', methods=['GET', 'POST'])
 def post():
