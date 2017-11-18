@@ -89,17 +89,20 @@ def home():
 	username = session['username']
 	cursor = conn.cursor();
 	#query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
-	#cursor.execute(query, (username))
-	#data = cursor.fetchall()
+	query = 'SELECT username, timest, content_name FROM Content WHERE (username = %s OR public = 1) ORDER BY timest DESC'
+	print (query)
+	cursor.execute(query, (username))
+	data = cursor.fetchall()
 	cursor.close()
-	#return render_template('home.html', username=username, posts=data)
-	return ('templates/ah/index.html')
+	return render_template('home.html', username=username, posts=data)
+	#return ('templates/ah/index.html')
 		
 @app.route('/post', methods=['GET', 'POST'])
 def post():
 	username = session['username']
 	cursor = conn.cursor();
 	blog = request.form['blog']
+	print(blog)
 	query = 'INSERT INTO blog (blog_post, username) VALUES(%s, %s)'
 	cursor.execute(query, (blog, username))
 	conn.commit()

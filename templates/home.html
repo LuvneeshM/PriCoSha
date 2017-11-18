@@ -15,13 +15,15 @@
 </style>
 
 <table>
+	<th>User</th>
 	<th>Time</th>
-	<th>Post</th>
+	<th>Content_name</th>
 
 {% for line in posts %}
 	<tr>
-		<td>{{line.ts}}</td>
-		<td>{{line.blog_post}}</td>
+		<td>{{line.username}}</td>
+		<td>{{line.timest}}</td>
+		<td>{{line.content_name }}</td>
 	</tr>
 {% endfor %}
 </table>
