@@ -89,8 +89,8 @@ def home():
 	username = session['username']
 	cursor = conn.cursor();
 	#query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
-	query = 'SELECT username, timest, content_name FROM Content WHERE (username = %s OR public = 1) ORDER BY timest DESC'
-	print (query)
+	#query = 'SELECT username, timest, content_name FROM Content WHERE (username = %s OR public = 1) ORDER BY timest DESC'
+	query = 'SELECT username, timest, content_name FROM Content as c WHERE public = 1 OR (%s IN (select username FROM member WHERE (member.group_name IN (SELECT posterMember.group_name FROM member as posterMember WHERE posterMember.username = c.username ) ) ) )'
 	cursor.execute(query, (username))
 	data = cursor.fetchall()
 	cursor.close()
