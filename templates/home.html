@@ -19,6 +19,7 @@
 	<th>Time</th>
 	<th>User</th>
 	<th>Content_name</th>
+	<th>Tagged</th>
 
 {% for line in posts %}
 	<tr>
@@ -26,6 +27,7 @@
 		<td>{{line.timest}}</td>
 		<td>{{line.username}}</td>
 		<td>{{line.content_name }}</td>
+		<td>{{line.tagged}}</td>
 	</tr>
 {% endfor %}
 </table>
