@@ -20,14 +20,21 @@
 	<th>User</th>
 	<th>Content_name</th>
 	<th>Tagged</th>
+	<th>Comments</th>
 
 {% for line in posts %}
 	<tr>
 		<td>{{line.id}}</td>
-		<td>{{line.timest}}</td>
-		<td>{{line.username}}</td>
+		<td>{{line.post_timest}}</td>
+		<td>{{line.post_username}}</td>
 		<td>{{line.content_name }}</td>
 		<td>{{line.tagged}}</td>
+		{% set usernames = (line.comment_username|string).split(',') %}
+		{% set timests = (line.comment_timest|string).split(',') %} 
+		{% set texts = (line.comment_text|string).split(',') %}
+		{% for i in range(usernames|length) %}
+		<td>{{usernames[i]}}{{timests[i]}}{{texts[i]}}</td>
+		{% endfor %}
 	</tr>
 {% endfor %}
 </table>

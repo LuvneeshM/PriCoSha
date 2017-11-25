@@ -90,7 +90,7 @@ def home():
 	cursor = conn.cursor();
 	#query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
 	#query = 'SELECT username, timest, content_name FROM Content WHERE (username = %s OR public = 1) ORDER BY timest DESC'
-	query = 'SELECT Content.id, Content.timest, username, content_name, GROUP_CONCAT(Tag.username_taggee) as tagged FROM Content LEFT JOIN Tag on Content.id = Tag.id WHERE (public = 1 OR (%s IN (SELECT username FROM member WHERE (member.group_name IN ( SELECT posterMember.group_name FROM member as posterMember WHERE posterMember.username= Content.username))))) GROUP BY Content.id'
+	query = 'SELECT Content.id, Content.timest as post_timest, Content.username as post_username, content_name, GROUP_CONCAT(Tag.username_taggee) as tagged, GROUP_CONCAT(Comment.username) as comment_username, GROUP_CONCAT(Comment.timest) as comment_timest, GROUP_CONCAT(Comment.comment_text) as comment_text FROM Content LEFT JOIN Tag on Content.id = Tag.id LEFT JOIN Comment ON Comment.id = Content.id WHERE (public = 1 OR (%s IN (SELECT username FROM member WHERE (member.group_name IN ( SELECT posterMember.group_name FROM member as posterMember WHERE posterMember.username= Content.username))))) GROUP BY Content.id'
 	cursor.execute(query, (username))
 	data = cursor.fetchall()
 	cursor.close()
