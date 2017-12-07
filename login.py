@@ -124,14 +124,15 @@ def manageTags(content_id, option, taggee, tagger):
 @app.route('/post', methods=['GET', 'POST'])
 def post():
 	username = session['username']
-	cursor = conn.cursor();
-	blog = request.form['blog']
-	print(blog)
-	query = 'INSERT INTO blog (blog_post, username) VALUES(%s, %s)'
-	cursor.execute(query, (blog, username))
-	conn.commit()
-	cursor.close()
-	return redirect(url_for('home'))
+	h = request.form.get('public')
+	
+	print(h)
+	return render_template('post.html', username=username)
+
+@app.route('/post2', methods=['GET', 'POST'])
+def post2():
+	username = session['username']
+	return render_template('home.html', username=username)
 
 '''
 @app.route('/accepttag', methods=['GET', 'POST'])

@@ -1,0 +1,26 @@
+<html>
+<head>
+</head>
+<body>
+<h1>Welcome {{username}}</h1> 
+<h2>Make a Post</h2>
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+<form action = "/post" method="POST">
+	<input type = "text" name = "title" placeholder = "Title" required/></br>
+	<input type = "text" name = "path" placeholder = "URL only" /></br>
+	<input type = "checkbox" name = "public" />Public?</br>
+	<input type = "submit" value = "Submit"/>
+</form>
+
+<a href="/">Go back</a>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>
