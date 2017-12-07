@@ -94,10 +94,33 @@ def home():
 	cursor.execute(query, (username, username))
 	data = cursor.fetchall()
 	cursor.close()
-	print(data)
 	return render_template('home.html', username=username, posts=data)
 	#return ('templates/ah/index.html')
-		
+
+#Manage tags
+@app.route('/managetags/<int:content_id>/<string:option>/<string:taggee>/<string:tagger>', methods=['GET', 'POST'])
+def manageTags(content_id, option, taggee, tagger):
+	username = session['username']
+
+	cursor = conn.cursor();
+
+	if option == 'accept':
+		query = "UPDATE Tag SET status = 1 WHERE id = {} AND username_taggee = '{}' AND username_tagger = '{}'".format(content_id, taggee, tagger)
+		print("THIS IS ME!", query)
+		cursor.execute(query)
+	if option == 'decline':
+		query = "DELETE FROM Tag WHERE id = {} AND username_taggee = '{}' AND username_tagger = '{}'".format(content_id, taggee, tagger)
+		cursor.execute(query)
+
+	
+	query = "SELECT Content.content_name, Content.id, username_taggee, username_tagger FROM Content JOIN Tag ON Content.id = Tag.id WHERE status = 0 AND username_taggee = %s"
+	cursor.execute(query, (username))
+	data = cursor.fetchall()
+	conn.commit()
+	cursor.close()
+	print(data)
+	return render_template('tags.html', username=username, tags=data)
+
 @app.route('/post', methods=['GET', 'POST'])
 def post():
 	username = session['username']
@@ -110,6 +133,14 @@ def post():
 	cursor.close()
 	return redirect(url_for('home'))
 
+'''
+@app.route('/accepttag', methods=['GET', 'POST'])
+def acceptTag():
+	print("Hi")
+	tag = flask.request.form()
+	query = "DELETE FROM tag WHERE "
+	return redirect('/managetags')
+'''
 @app.route('/logout')
 def logout():
 	session.pop('username')

@@ -1,0 +1,41 @@
+<html>
+<head>
+</head>
+<body>
+<h1>Welcome {{username}}</h1>
+
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+<table>
+	<th>Content Name</th>
+	<th>ID</th>
+	<th>Taggee</th>
+	<th>Tagger</th>
+	<th>Options</th>
+
+{% for tag in tags %}
+	<tr>
+		<td>{{tag.content_name}}</td>
+		<td>{{tag.id}}</td>
+		<td>{{tag.username_taggee}}</td>
+		<td>{{tag.username_tagger}}</td>
+		<td>
+			<input type = "button" value = "Accept" onclick = "window.location='/managetags/{{tag.id}}/accept/{{tag.username_taggee}}/{{tag.username_tagger}}'"; /">
+			<input type = "button" value = "Decline" onclick = "window.location='/managetags/{{tag.id}}/decine/{{tag.username_taggee}}/{{tag.username_tagger}}'"; />
+		</td>
+
+		</td>
+	</tr>
+{% endfor %}
+</table>
+
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>
