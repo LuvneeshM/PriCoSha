@@ -142,7 +142,6 @@ def makePost():
 	#update the content table
 	if request.form.get('path') != "":
 		print("PATH FULL")
-
 		query = "INSERT INTO Content (username, timest, file_path, content_name, public) VALUES('{}','{}','{}','{}',{})".format(username, str(time.strftime('%Y-%m-%d %H:%M:%S')), str(request.form.get('path')), str(request.form.get('title')), (1 if amIPublic != None else 0) )
 	else:
 		print("PATH EMPTY")
@@ -151,13 +150,23 @@ def makePost():
 	cursor.execute(query)
 	data = cursor.fetchall()
 	conn.commit()
-	cursor.close()
-	#person only likes private things
-	if amIPublic != None:
-		print("I SHALL BE NOT PUBLIC")
-		
-		#insertContent = "INSERT INTO Share VALUES({},{},%s)".format()
 
+	#person only likes private things
+	if amIPublic == None:
+		if request.form.get('friend_group_list') != None:
+			print(len(request.form.get('friend_group_list')))
+			for fr in request.form.get('friend_group_list'):
+				print("I SHALL BE NOT PUBLIC")
+				query_2 = "SELECT max(tb.id) as maxId FROM (SELECT username, max(id) as id FROM Content Group By username) as tb WHERE tb.username=%s"
+				cursor.execute(query_2, (username))
+				data = cursor.fetchall()
+				#print(data[0]['maxId'])
+				insertContent = "INSERT INTO Share VALUES({},'{}','{}')".format(data[0]['maxId'], str(fr) ,username)
+				cursor.execute(insertContent)
+				data = cursor.fetchall()
+				conn.commit()
+
+	cursor.close()
 	return redirect(url_for('home'))
 
 @app.route('/logout')
