@@ -153,18 +153,19 @@ def makePost():
 
 	#person only likes private things
 	if amIPublic == None:
-		if request.form.get('friend_group_list') != None:
-			print(len(request.form.get('friend_group_list')))
-			for fr in request.form.get('friend_group_list'):
-				print("I SHALL BE NOT PUBLIC")
-				query_2 = "SELECT max(tb.id) as maxId FROM (SELECT username, max(id) as id FROM Content Group By username) as tb WHERE tb.username=%s"
-				cursor.execute(query_2, (username))
-				data = cursor.fetchall()
-				#print(data[0]['maxId'])
-				insertContent = "INSERT INTO Share VALUES({},'{}','{}')".format(data[0]['maxId'], str(fr) ,username)
-				cursor.execute(insertContent)
-				data = cursor.fetchall()
-				conn.commit()
+			
+		print("urg",request.form.getlist('friend_group_list'))
+
+		for fr in request.form.getlist('friend_group_list'):
+			print("I SHALL BE NOT PUBLIC")
+			print("fr is", fr)
+			query_2 = "SELECT max(tb.id) as maxId FROM (SELECT username, max(id) as id FROM Content Group By username) as tb WHERE tb.username=%s"
+			cursor.execute(query_2, (username))
+			data = cursor.fetchall()
+			insertContent = "INSERT INTO Share VALUES({},'{}','{}')".format(data[0]['maxId'], str(fr) ,username)
+			cursor.execute(insertContent)
+			data = cursor.fetchall()
+			conn.commit()
 
 	cursor.close()
 	return redirect(url_for('home'))
