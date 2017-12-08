@@ -10,11 +10,20 @@
 	}
 </style>
 
-<form action = "/post" method="POST">
+<form action = "/makePost" method="POST">
 	<input type = "text" name = "title" placeholder = "Title" required/></br>
 	<input type = "text" name = "path" placeholder = "URL only" /></br>
 	<input type = "checkbox" name = "public" />Public?</br>
+	{% for friend in friends %}
+	<ul>
+		<li>
+			<input type = "checkbox" name = {{friend.group_name}} />{{friend.group_name}}</br>
+		</li>
+	</ul>
+	{% endfor %}
+
 	<input type = "submit" value = "Submit"/>
+
 </form>
 
 <a href="/">Go back</a>

@@ -1,6 +1,8 @@
 #Import Flask Library
 from flask import Flask, render_template, request, session, url_for, redirect
 import pymysql.cursors
+import datetime
+import time
 
 
 app = Flask(__name__)
@@ -95,7 +97,6 @@ def home():
 	data = cursor.fetchall()
 	cursor.close()
 	return render_template('home.html', username=username, posts=data)
-	#return ('templates/ah/index.html')
 
 #Manage tags
 @app.route('/managetags/<int:content_id>/<string:option>/<string:taggee>/<string:tagger>', methods=['GET', 'POST'])
@@ -124,24 +125,41 @@ def manageTags(content_id, option, taggee, tagger):
 @app.route('/post', methods=['GET', 'POST'])
 def post():
 	username = session['username']
-	h = request.form.get('public')
-	
-	print(h)
-	return render_template('post.html', username=username)
+	cursor = conn.cursor();
+	query = "SELECT group_name FROM FriendGroup WHERE username = %s"
+	print (query)
+	cursor.execute(query, (username))
+	data = cursor.fetchall()
+	cursor.close()
+	return render_template('post.html', username=username, friends=data)
 
-@app.route('/post2', methods=['GET', 'POST'])
-def post2():
-	username = session['username']
-	return render_template('home.html', username=username)
+@app.route('/makePost', methods=['GET','POST'])
+def makePost():
+	username  = session['username']
+	amIPublic = request.form.get('public')
+	cursor = conn.cursor();
+	query = None
+	#update the content table
+	if request.form.get('path') != "":
+		print("PATH FULL")
 
-'''
-@app.route('/accepttag', methods=['GET', 'POST'])
-def acceptTag():
-	print("Hi")
-	tag = flask.request.form()
-	query = "DELETE FROM tag WHERE "
-	return redirect('/managetags')
-'''
+		query = "INSERT INTO Content (username, timest, file_path, content_name, public) VALUES('{}','{}','{}','{}',{})".format(username, str(time.strftime('%Y-%m-%d %H:%M:%S')), str(request.form.get('path')), str(request.form.get('title')), (1 if amIPublic != None else 0) )
+	else:
+		print("PATH EMPTY")
+		title_c = request.form.get('title')
+		query = "INSERT INTO Content (username, timest, content_name, public) VALUES('{}','{}','{}',{})".format(username, str(time.strftime('%Y-%m-%d %H:%M:%S')), title_c, (1 if amIPublic != None else 0) )
+	cursor.execute(query)
+	data = cursor.fetchall()
+	conn.commit()
+	cursor.close()
+	#person only likes private things
+	if amIPublic != None:
+		print("I SHALL BE NOT PUBLIC")
+		
+		#insertContent = "INSERT INTO Share VALUES({},{},%s)".format()
+
+	return redirect(url_for('home'))
+
 @app.route('/logout')
 def logout():
 	session.pop('username')
