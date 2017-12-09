@@ -119,9 +119,9 @@ def manageTags(content_id, option, taggee, tagger):
 	data = cursor.fetchall()
 	conn.commit()
 	cursor.close()
-	print(data)
 	return render_template('tags.html', username=username, tags=data)
 
+#for posting
 @app.route('/post', methods=['GET', 'POST'])
 def post():
 	username = session['username']
@@ -132,7 +132,6 @@ def post():
 	data = cursor.fetchall()
 	cursor.close()
 	return render_template('post.html', username=username, friends=data)
-
 @app.route('/makePost', methods=['GET','POST'])
 def makePost():
 	username  = session['username']
@@ -170,6 +169,7 @@ def makePost():
 	cursor.close()
 	return redirect(url_for('home'))
 
+#tag someone
 @app.route('/tagging/<int:content_id>', methods=['GET', 'POST'])
 def tagging(content_id):
 	username = session['username']
@@ -179,9 +179,7 @@ def tagging(content_id):
 	cursor.execute(query)
 	data = cursor.fetchall()
 	cursor.close()
-
 	return render_template('tagging.html', username=username, id=content_id, persons=data)
-
 @app.route('/taggingconfirm/<int:content_id>', methods=['GET', 'POST'])
 def taggingConfirm(content_id):
 	username = session['username']
@@ -189,7 +187,7 @@ def taggingConfirm(content_id):
 	#returns the user name as a list
 	person = request.form.get('to_tag_person')
 	if person == username:
-		query = "INSERT INTO Tag (id, username_tagger, username_taggee, status)VALUES ({}, '{}', '{}', true)".format(content_id, username, username)
+		query = "INSERT INTO Tag (id, username_tagger, username_taggee, timest, status) VALUES ({}, '{}', '{}', '{}', true)".format(content_id, username, username, str(time.strftime('%Y-%m-%d %H:%M:%S')))
 		cursor.execute(query)
 		conn.commit()
 		status = "Successfully tagged!"
@@ -199,7 +197,7 @@ def taggingConfirm(content_id):
 		data = cursor.fetchall()
 		for group in data:
 			if group['id'] == content_id:
-				query = "INSERT INTO Tag (id, username_tagger, username_taggee, status) VALUES ({}, '{}', '{}', false)".format(content_id, username, person)
+				query = "INSERT INTO Tag (id, username_tagger, username_taggee, timest, status) VALUES ({}, '{}', '{}', '{}', false)".format(content_id, username, person, str(time.strftime('%Y-%m-%d %H:%M:%S')))
 				cursor.execute(query)
 				conn.commit()
 				status = "Successfully tagged!"
@@ -210,6 +208,7 @@ def taggingConfirm(content_id):
 
 	return render_template('taggingconfirm.html', username=username, confirmed=status)
 
+#log out
 @app.route('/logout')
 def logout():
 	session.pop('username')
