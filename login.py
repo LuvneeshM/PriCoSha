@@ -187,22 +187,29 @@ def taggingConfirm(content_id):
 	#returns the user name as a list
 	person = request.form.get('to_tag_person')
 	if person == username:
-		query = "INSERT INTO Tag (id, username_tagger, username_taggee, timest, status) VALUES ({}, '{}', '{}', '{}', true)".format(content_id, username, username, str(time.strftime('%Y-%m-%d %H:%M:%S')))
-		cursor.execute(query)
-		conn.commit()
-		status = "Successfully tagged!"
+		try:
+			query = "INSERT INTO Tag (id, username_tagger, username_taggee, timest, status) VALUES ({}, '{}', '{}', '{}', true)".format(content_id, username, username, str(time.strftime('%Y-%m-%d %H:%M:%S')))
+			cursor.execute(query)
+			conn.commit()
+			status = "Successfully tagged!"
+		except:
+			status = "You already tagged this person"
+			return render_template('taggingconfirm.html', username=username, confirmed=status)
 	else:
 		query = "SELECT id FROM Content WHERE public = 1 OR (%s IN (SELECT username FROM member WHERE (member.group_name IN ( SELECT posterMember.group_name FROM member as posterMember WHERE posterMember.username= Content.username))) AND Content.id IN ( SELECT id FROM Share WHERE group_name IN ( SELECT group_name FROM Member WHERE username = %s))) GROUP BY Content.id"
 		cursor.execute(query,(person, person))
 		data = cursor.fetchall()
 		for group in data:
-			if group['id'] == content_id:
-				query = "INSERT INTO Tag (id, username_tagger, username_taggee, timest, status) VALUES ({}, '{}', '{}', '{}', false)".format(content_id, username, person, str(time.strftime('%Y-%m-%d %H:%M:%S')))
-				cursor.execute(query)
-				conn.commit()
-				status = "Successfully tagged!"
+			try:
+				if group['id'] == content_id:
+					query = "INSERT INTO Tag (id, username_tagger, username_taggee, timest, status) VALUES ({}, '{}', '{}', '{}', false)".format(content_id, username, person, str(time.strftime('%Y-%m-%d %H:%M:%S')))
+					cursor.execute(query)
+					conn.commit()
+					status = "Successfully tagged!"
+					return render_template('taggingconfirm.html', username=username, confirmed=status)
+			except:
+				status = "You already tagged this person"
 				return render_template('taggingconfirm.html', username=username, confirmed=status)
-
 		status = "Failed to tag person, they cannot view that content."
 		return render_template('taggingconfirm.html', username=username, confirmed=status)
 
