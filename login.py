@@ -185,7 +185,9 @@ def tagging(content_id):
 @app.route('/taggingconfirm', methods=['GET', 'POST'])
 def taggingConfirm():
 	username = session['username']
-	print(request.form.getlist('person'))
+	print("HELP ME")
+	#returns the user name as a list
+	print(request.form.getlist('to_tag_person'))
 	cursor = conn.cursor();
 	return render_template('taggingconfirm.html', username=username)
 

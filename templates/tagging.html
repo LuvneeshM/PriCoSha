@@ -8,13 +8,18 @@
 </style>
 
 <h4>Choose a person to tag!</h4>
-<form>
-{% for person in persons %}
 
-<input type = "radio" name = "person" value = {{person.username}}>{{person.first_name}} {{person.last_name}}</input></br>
-
-{% endfor %}
-<input type = "button" value = "Tag" onclick = "window.location='/taggingconfirm'"; /></input>
+<form action = "/taggingconfirm" method="POST">
+	<fieldset>
+	{% for person in persons %}
+	<ul>
+		<li>
+			<input type="radio" name="to_tag_person" value = {{person.username}} />{{person.first_name}} {{person.last_name}}
+		</li>
+	</ul>
+	{% endfor %}
+	</fieldset>
+	<input type = "submit" value = "Tag" />
 </form>
 
 <a href="/">Go back</a>
