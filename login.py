@@ -182,14 +182,33 @@ def tagging(content_id):
 
 	return render_template('tagging.html', username=username, id=content_id, persons=data)
 
-@app.route('/taggingconfirm', methods=['GET', 'POST'])
-def taggingConfirm():
+@app.route('/taggingconfirm/<int:content_id>', methods=['GET', 'POST'])
+def taggingConfirm(content_id):
 	username = session['username']
-	print("HELP ME")
-	#returns the user name as a list
-	print(request.form.getlist('to_tag_person'))
 	cursor = conn.cursor();
-	return render_template('taggingconfirm.html', username=username)
+	#returns the user name as a list
+	person = request.form.get('to_tag_person')
+	if person == username:
+		query = "INSERT INTO Tag (id, username_tagger, username_taggee, status)VALUES ({}, '{}', '{}', true)".format(content_id, username, username)
+		cursor.execute(query)
+		conn.commit()
+		status = "Successfully tagged!"
+	else:
+		query = "SELECT id FROM Content WHERE public = 1 OR (%s IN (SELECT username FROM member WHERE (member.group_name IN ( SELECT posterMember.group_name FROM member as posterMember WHERE posterMember.username= Content.username))) AND Content.id IN ( SELECT id FROM Share WHERE group_name IN ( SELECT group_name FROM Member WHERE username = %s))) GROUP BY Content.id"
+		cursor.execute(query,(person, person))
+		data = cursor.fetchall()
+		for group in data:
+			if group['id'] == content_id:
+				query = "INSERT INTO Tag (id, username_tagger, username_taggee, status) VALUES ({}, '{}', '{}', false)".format(content_id, username, person)
+				cursor.execute(query)
+				conn.commit()
+				status = "Successfully tagged!"
+				return render_template('taggingconfirm.html', username=username, confirmed=status)
+
+		status = "Failed to tag person, they cannot view that content."
+		return render_template('taggingconfirm.html', username=username, confirmed=status)
+
+	return render_template('taggingconfirm.html', username=username, confirmed=status)
 
 @app.route('/logout')
 def logout():

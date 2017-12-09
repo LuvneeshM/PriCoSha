@@ -9,7 +9,7 @@
 
 <h4>Choose a person to tag!</h4>
 
-<form action = "/taggingconfirm" method="POST">
+<form action = "/taggingconfirm/{{id}}" method="POST">
 	<fieldset>
 	{% for person in persons %}
 	<ul>
@@ -22,7 +22,7 @@
 	<input type = "submit" value = "Tag" />
 </form>
 
-<a href="/">Go back</a>
+<a href="/home">Go back</a>
 <a href="/logout">Logout</a>
 
 </body>
