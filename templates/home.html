@@ -21,6 +21,7 @@
 	<th>Image</th>
 	<th>Tagged</th>
 	<th>Comments</th>
+	<th>Tag Time</th>
 
 {% for line in posts %}
 	<tr>
@@ -28,9 +29,10 @@
 		<td>{{line.post_timest}}</td>
 		<td>{{line.post_username}}</td>
 		<td>{{line.content_name }}</td>
-		<td><img src={{line.file_path}} onerror="this.style.display='none'" alt="jokes" height="40" width="40"></td>
+		<td><img src={{line.file_path}} onerror="this.style.display='none'" height="40" width="40"></td>
 		<td>{{line.tagged}}</td>
 		<td>{{line.comment}}</td>
+		<td><input type = "button" value = "Accept" onclick = "window.location='/tagging/{{line.id}}'"; /"></td>
 		<!--
 		{% set usernames = (line.comment_username|string).split(',') %}
 		{% set timests = (line.comment_timest|string).split(',') %} 
