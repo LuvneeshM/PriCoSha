@@ -1,0 +1,33 @@
+<html>
+<head>
+</head>
+<body>
+<h1>Hi {{username}}</h1>
+
+<style type="text/css">
+</style>
+
+<h4>Choose a friend group.</h4>
+
+<form action = "/addingconfirm" method="POST">
+	<fieldset>
+	{% for group in groups %}
+	<ul>
+		<li>
+			<input type="radio" name="to_choose_group" value = {{group.group_name}} />{{group.group_name}}
+		</li>
+	</ul>
+	{% endfor %}
+	</fieldset>
+	</br>
+	<input type = "text" name = "to_choose_person" placeholder = "First Name, Last Name" /></br>
+	<input type = "submit" value = "Add Friend" />
+</form>
+
+<a href="/home">Go back</a>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

@@ -180,6 +180,7 @@ def tagging(content_id):
 	data = cursor.fetchall()
 	cursor.close()
 	return render_template('tagging.html', username=username, id=content_id, persons=data)
+
 @app.route('/taggingconfirm/<int:content_id>', methods=['GET', 'POST'])
 def taggingConfirm(content_id):
 	username = session['username']
@@ -214,6 +215,54 @@ def taggingConfirm(content_id):
 		return render_template('taggingconfirm.html', username=username, confirmed=status)
 
 	return render_template('taggingconfirm.html', username=username, confirmed=status)
+
+@app.route('/addingfriend', methods=['GET', 'POST'])
+def addingFriend():
+	username = session['username']
+	cursor = conn.cursor();
+	# get all the friendgroups that user owns
+	query = "SELECT group_name FROM FriendGroup WHERE username = '{}'".format(username)
+	cursor.execute(query)
+	data = cursor.fetchall()
+	return render_template('addingfriend.html', username=username, groups=data)
+
+@app.route('/addingconfirm', methods=['GET', 'POST'])
+def addingConfirm():
+	username = session['username']
+	group_name = request.form.get('to_choose_group')
+	first_name = request.form.get('to_choose_person').split(' ')[0]
+	last_name = request.form.get('to_choose_person').split(' ')[1]
+	cursor = conn.cursor();
+	# get all the people with that first and last name - *should* return only one username
+	query = "SELECT username FROM Person WHERE username != '{}' AND first_name = '{}' AND last_name = '{}'".format(username, first_name, last_name)
+	cursor.execute(query)
+	info = cursor.fetchall()
+
+	if (len(info) == 0):
+		status = "Invalid: person does not exist or you tried to add yourself."
+		return render_template('addingconfirm.html', username=username, confirmed=status)
+
+	person = info[0]['username']
+	# multiple people issue
+	if (len(info) > 1):
+		status = "Cannot add person - more than one person with that name exists."
+		return render_template('addingconfirm.html', username=username, confirmed=status)
+	else:
+		# get all the groups that the person is a member of
+		query = "SELECT group_name FROM Member WHERE username = '{}'".format(person)
+		cursor.execute(query)
+		groups = cursor.fetchall()
+		# is this person already in the group they're being added to?
+		for group in groups:
+			if group['group_name'] == group_name:
+				status = "This person is already a member of this group!"
+				return render_template('addingconfirm.html', username=username, confirmed=status)
+
+	query = "INSERT INTO Member VALUES('{}', '{}', '{}')".format(person, group_name, username)
+	cursor.execute(query)
+	conn.commit()
+	status = "Friend added to group!"
+	return render_template('addingconfirm.html', username=username, confirmed=status)
 
 #log out
 @app.route('/logout')
