@@ -170,6 +170,11 @@ def makePost():
 	cursor.close()
 	return redirect(url_for('home'))
 
+@app.route('/tagging/<int:content_id>', methods=['GET', 'POST'])
+def tagging(content_id):
+	username = session['username']
+	return render_template('tagging.html', username=username)
+
 @app.route('/logout')
 def logout():
 	session.pop('username')
