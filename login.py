@@ -173,7 +173,21 @@ def makePost():
 @app.route('/tagging/<int:content_id>', methods=['GET', 'POST'])
 def tagging(content_id):
 	username = session['username']
-	return render_template('tagging.html', username=username)
+	cursor = conn.cursor();
+	# just get all the people to display on the page
+	query = "SELECT username, first_name, last_name FROM Person"
+	cursor.execute(query)
+	data = cursor.fetchall()
+	cursor.close()
+
+	return render_template('tagging.html', username=username, id=content_id, persons=data)
+
+@app.route('/taggingconfirm', methods=['GET', 'POST'])
+def taggingConfirm():
+	username = session['username']
+	print(request.form.getlist('person'))
+	cursor = conn.cursor();
+	return render_template('taggingconfirm.html', username=username)
 
 @app.route('/logout')
 def logout():
