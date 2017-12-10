@@ -273,19 +273,24 @@ def addingFriend():
 @app.route('/addingconfirm', methods=['GET', 'POST'])
 def addingConfirm():
 	username = session['username']
-	group_name = request.form.get('to_choose_group')
-	first_name = request.form.get('to_choose_person').split(' ')[0]
-	last_name = request.form.get('to_choose_person').split(' ')[1]
 	cursor = conn.cursor();
-	# get all the people with that first and last name - *should* return only one username
-	query = "SELECT username FROM Person WHERE username != '{}' AND first_name = '{}' AND last_name = '{}'".format(username, first_name, last_name)
-	cursor.execute(query)
-	info = cursor.fetchall()
-
 	#what color type
 	query = "SELECT night_mode FROM NightMode WHERE username = %s"
 	cursor.execute(query, (username))
 	colorMode = cursor.fetchall()
+
+	group_name = request.form.get('to_choose_group')
+	try:
+		first_name = request.form.get('to_choose_person').split(' ')[0]
+		last_name = request.form.get('to_choose_person').split(' ')[1]
+	except:
+		status = "This is not the proper format for a name."
+		return render_template('addingconfirm.html', username=username, confirmed=status, colors=colorMode)
+	
+	# get all the people with that first and last name - *should* return only one username
+	query = "SELECT username FROM Person WHERE username != '{}' AND first_name = '{}' AND last_name = '{}'".format(username, first_name, last_name)
+	cursor.execute(query)
+	info = cursor.fetchall()
 
 	if (len(info) == 0):
 		status = "Invalid: person does not exist or you tried to add yourself."
