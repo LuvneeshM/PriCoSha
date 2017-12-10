@@ -83,7 +83,7 @@ def registerAuth():
 		cursor.execute(ins, (username, password, firstname, lastname))
 		conn.commit()
 
-		colorMode = "INSERT INTO NightMode VALUES('{}','{}')".format(username, false)
+		colorMode = "INSERT INTO NightMode VALUES('{}',{})".format(username, 0)
 		cursor.execute(colorMode)
 		conn.commit()
 
@@ -303,7 +303,7 @@ def addingConfirm():
 		return render_template('addingconfirm.html', username=username, confirmed=status, colors=colorMode)
 	else:
 		# get all the groups that the person is a member of
-		query = "SELECT group_name FROM Member WHERE username = '{}'".format(person)
+		query = "SELECT group_name FROM Member WHERE username = '{}' AND username_creator = '{}'".format(person, username)
 		cursor.execute(query)
 		groups = cursor.fetchall()
 		# is this person already in the group they're being added to?
@@ -317,6 +317,50 @@ def addingConfirm():
 	conn.commit()
 	status = "Friend added to group!"
 	return render_template('addingconfirm.html', username=username, confirmed=status, colors=colorMode)
+
+@app.route('/creategroup', methods=['GET', 'POST'])
+def createGroup():
+	username = session['username']
+	cursor = conn.cursor();
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
+
+	return render_template('creategroup.html', username=username, colors=colorMode)
+
+@app.route('/createconfirm', methods=['GET', 'POST'])
+def createConfirm():
+	username = session['username']
+	cursor = conn.cursor();
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
+
+	group_name = request.form.get('to_make_group')
+	group_description = request.form.get('group_description')
+
+	query = "SELECT group_name, username FROM FriendGroup WHERE group_name = '{}' AND username = '{}'".format(group_name, username)
+	cursor.execute(query)
+	data = cursor.fetchall()
+
+	# does this person already have a group by this name?
+	if (len(data) > 0):
+		status = "You already own a group with this name!"
+		return render_template('createconfirm.html', username=username, confirmed=status, colors=colorMode)
+
+	# group is now in FriendGroup
+	query = "INSERT INTO FriendGroup VALUES('{}', '{}', '{}')".format(group_name, username, group_description)
+	cursor.execute(query)
+	# user is now a member of the group they just made
+	query = "INSERT INTO Member VALUES('{}', '{}', '{}')".format(username, group_name, username)
+	cursor.execute(query)
+
+	conn.commit()
+
+	status = "Successfully created group!"
+	return render_template('createconfirm.html', username=username, confirmed=status, colors=colorMode)
 
 # ################################################################
 # Night Mode
