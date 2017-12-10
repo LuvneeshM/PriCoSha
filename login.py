@@ -4,7 +4,6 @@ import pymysql.cursors
 import datetime
 import time
 
-
 app = Flask(__name__)
 
 #Configure MySQL
@@ -83,9 +82,17 @@ def registerAuth():
 		ins = 'INSERT INTO person VALUES(%s, md5(%s), %s, %s)'
 		cursor.execute(ins, (username, password, firstname, lastname))
 		conn.commit()
+
+		colorMode = "INSERT INTO NightMode VALUES('{}','{}')".format(username, false)
+		cursor.execute(colorMode)
+		conn.commit()
+
 		cursor.close()
 		return render_template('index.html')
 
+# ################################################################
+# home page material
+# ################################################################
 @app.route('/home')
 def home():
 	username = session['username']
@@ -95,10 +102,18 @@ def home():
 	query = "SELECT Content.id, Content.timest as post_timest, Content.username as post_username, content_name, file_path, GROUP_CONCAT(DISTINCT(SELECT CONCAT(first_name,' ',last_name) as name FROM Person WHERE Tag.username_taggee = Person.username AND status = 1)) as tagged, GROUP_CONCAT(DISTINCT CONCAT(Comment.username, ' ', Comment.timest, ' ', Comment.comment_text)) as comment FROM Content LEFT JOIN Tag on Content.id = Tag.id LEFT JOIN Comment ON Comment.id = Content.id WHERE (public = 1 OR (%s IN (SELECT username FROM member WHERE (member.group_name IN ( SELECT posterMember.group_name FROM member as posterMember WHERE posterMember.username= Content.username))) AND Content.id IN ( SELECT id FROM Share WHERE group_name IN ( SELECT group_name FROM Member WHERE username = %s)))) GROUP BY Content.id"
 	cursor.execute(query, (username, username))
 	data = cursor.fetchall()
-	cursor.close()
-	return render_template('home.html', username=username, posts=data)
 
-#Manage tags
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
+
+	cursor.close()
+	return render_template('home.html', username=username, posts=data, colors=colorMode)
+
+# ################################################################
+# Manage and see tags
+# ################################################################
 @app.route('/managetags/<int:content_id>/<string:option>/<string:taggee>/<string:tagger>', methods=['GET', 'POST'])
 def manageTags(content_id, option, taggee, tagger):
 	username = session['username']
@@ -113,25 +128,36 @@ def manageTags(content_id, option, taggee, tagger):
 		query = "DELETE FROM Tag WHERE id = {} AND username_taggee = '{}' AND username_tagger = '{}'".format(content_id, taggee, tagger)
 		cursor.execute(query)
 
-	
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
+
 	query = "SELECT Content.content_name, Content.id, username_taggee, username_tagger FROM Content JOIN Tag ON Content.id = Tag.id WHERE status = 0 AND username_taggee = %s"
 	cursor.execute(query, (username))
 	data = cursor.fetchall()
 	conn.commit()
 	cursor.close()
-	return render_template('tags.html', username=username, tags=data)
+	return render_template('tags.html', username=username, tags=data, colors=colorMode)
 
-#for posting
+# ################################################################
+# for posting
+# ################################################################
 @app.route('/post', methods=['GET', 'POST'])
 def post():
 	username = session['username']
 	cursor = conn.cursor();
 	query = "SELECT group_name FROM FriendGroup WHERE username = %s"
-	print (query)
 	cursor.execute(query, (username))
 	data = cursor.fetchall()
+
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
+
 	cursor.close()
-	return render_template('post.html', username=username, friends=data)
+	return render_template('post.html', username=username, friends=data,colors=colorMode)
 @app.route('/makePost', methods=['GET','POST'])
 def makePost():
 	username  = session['username']
@@ -169,7 +195,9 @@ def makePost():
 	cursor.close()
 	return redirect(url_for('home'))
 
-#tag someone
+# ################################################################
+# Tag someone else 
+# ################################################################
 @app.route('/tagging/<int:content_id>', methods=['GET', 'POST'])
 def tagging(content_id):
 	username = session['username']
@@ -178,15 +206,24 @@ def tagging(content_id):
 	query = "SELECT username, first_name, last_name FROM Person"
 	cursor.execute(query)
 	data = cursor.fetchall()
-	cursor.close()
-	return render_template('tagging.html', username=username, id=content_id, persons=data)
 
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
+
+	cursor.close()
+	return render_template('tagging.html', username=username, id=content_id, persons=data,colors=colorMode)
 @app.route('/taggingconfirm/<int:content_id>', methods=['GET', 'POST'])
 def taggingConfirm(content_id):
 	username = session['username']
 	cursor = conn.cursor();
 	#returns the user name as a list
 	person = request.form.get('to_tag_person')
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
 	if person == username:
 		try:
 			query = "INSERT INTO Tag (id, username_tagger, username_taggee, timest, status) VALUES ({}, '{}', '{}', '{}', true)".format(content_id, username, username, str(time.strftime('%Y-%m-%d %H:%M:%S')))
@@ -195,7 +232,7 @@ def taggingConfirm(content_id):
 			status = "Successfully tagged!"
 		except:
 			status = "You already tagged this person"
-			return render_template('taggingconfirm.html', username=username, confirmed=status)
+			return render_template('taggingconfirm.html', username=username, confirmed=status,colors=colorMode)
 	else:
 		query = "SELECT id FROM Content WHERE public = 1 OR (%s IN (SELECT username FROM member WHERE (member.group_name IN ( SELECT posterMember.group_name FROM member as posterMember WHERE posterMember.username= Content.username))) AND Content.id IN ( SELECT id FROM Share WHERE group_name IN ( SELECT group_name FROM Member WHERE username = %s))) GROUP BY Content.id"
 		cursor.execute(query,(person, person))
@@ -207,15 +244,18 @@ def taggingConfirm(content_id):
 					cursor.execute(query)
 					conn.commit()
 					status = "Successfully tagged!"
-					return render_template('taggingconfirm.html', username=username, confirmed=status)
+					return render_template('taggingconfirm.html', username=username, confirmed=status, colors=colorMode)
 			except:
 				status = "You already tagged this person"
-				return render_template('taggingconfirm.html', username=username, confirmed=status)
+				return render_template('taggingconfirm.html', username=username, confirmed=status, colors=colorMode)
 		status = "Failed to tag person, they cannot view that content."
-		return render_template('taggingconfirm.html', username=username, confirmed=status)
+		return render_template('taggingconfirm.html', username=username, confirmed=status, colors=colorMode)
 
-	return render_template('taggingconfirm.html', username=username, confirmed=status)
+	return render_template('taggingconfirm.html', username=username, confirmed=status, colors=colorMode)
 
+# ################################################################
+# lets not be lonely anymore
+# ################################################################
 @app.route('/addingfriend', methods=['GET', 'POST'])
 def addingFriend():
 	username = session['username']
@@ -224,8 +264,12 @@ def addingFriend():
 	query = "SELECT group_name FROM FriendGroup WHERE username = '{}'".format(username)
 	cursor.execute(query)
 	data = cursor.fetchall()
-	return render_template('addingfriend.html', username=username, groups=data)
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
 
+	return render_template('addingfriend.html', username=username, groups=data, colors=colorMode)
 @app.route('/addingconfirm', methods=['GET', 'POST'])
 def addingConfirm():
 	username = session['username']
@@ -238,15 +282,20 @@ def addingConfirm():
 	cursor.execute(query)
 	info = cursor.fetchall()
 
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
+
 	if (len(info) == 0):
 		status = "Invalid: person does not exist or you tried to add yourself."
-		return render_template('addingconfirm.html', username=username, confirmed=status)
+		return render_template('addingconfirm.html', username=username, confirmed=status, colors=colorMode)
 
 	person = info[0]['username']
 	# multiple people issue
 	if (len(info) > 1):
 		status = "Cannot add person - more than one person with that name exists."
-		return render_template('addingconfirm.html', username=username, confirmed=status)
+		return render_template('addingconfirm.html', username=username, confirmed=status, colors=colorMode)
 	else:
 		# get all the groups that the person is a member of
 		query = "SELECT group_name FROM Member WHERE username = '{}'".format(person)
@@ -256,13 +305,34 @@ def addingConfirm():
 		for group in groups:
 			if group['group_name'] == group_name:
 				status = "This person is already a member of this group!"
-				return render_template('addingconfirm.html', username=username, confirmed=status)
+				return render_template('addingconfirm.html', username=username, confirmed=status, colors=colorMode)
 
 	query = "INSERT INTO Member VALUES('{}', '{}', '{}')".format(person, group_name, username)
 	cursor.execute(query)
 	conn.commit()
 	status = "Friend added to group!"
-	return render_template('addingconfirm.html', username=username, confirmed=status)
+	return render_template('addingconfirm.html', username=username, confirmed=status, colors=colorMode)
+
+# ################################################################
+# Night Mode
+# ################################################################
+@app.route('/nightMode', methods=['GET', 'POST'])
+def nightMode():
+	username = session['username']
+	print("hi",request.form)
+	print ("invert is", request.form.get('invert'))
+	cursor = conn.cursor();
+	if(request.form.get('invert') == 'on'):
+		query = "UPDATE NightMode SET night_mode = 1 WHERE username = %s"
+		cursor.execute(query, (username))
+		conn.commit()
+	else:
+		query = "UPDATE NightMode SET night_mode = 0 WHERE username = %s"
+		cursor.execute(query, (username))
+		conn.commit()
+
+	cursor.close()
+	return redirect(url_for('home'))
 
 #log out
 @app.route('/logout')

@@ -1,16 +1,26 @@
 <html>
 <head>
+	<style type="text/css">
+	
+		table, th, td{
+			border: 1px solid black;
+		}
+
+		body{
+			filter: invert(0%);
+			background: rgb(255,255,255)
+		}
+	
+	</style>
 </head>
-<body>
+<body id="theBody">
 <h1>Welcome {{username}}</h1> 
 
-<a href = '/post'>Post a Content</a>
-<style type="text/css">
-	table, th, td{
-		border: 1px solid black;
-	}
-</style>
+<form name="theForm" action = "/nightMode" method="POST">
+	<input type="checkbox" name="invert" id="night_mode" onclick="submitChangeColor()" ><label for="night_mode">Night Mode</label>
+</form>
 
+<a href = '/post'>Post a Content</a>
 <a href = '/managetags/0/default/none/none'>Manage Tags</a>
 <a href = '/addingfriend'>Add a Friend</a>
 
@@ -47,7 +57,40 @@
 </table>
 
 <a href="/logout">Logout</a>
+<script
+	  src="https://code.jquery.com/jquery-2.2.4.min.js"
+	  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+	  crossorigin="anonymous">
+</script>
+<script type="text/javascript">
+	    // wait for dom to load
+    $(document).ready(function() {
+    	setColorMode()
+    });
 
+    function setColorMode(){
+    	console.log("color is",{{colors[0].night_mode}});
+    	document.getElementById("night_mode").checked = {{colors[0].night_mode}};
+    	invertColors();
+    }
+
+    function invertColors(){
+    	 var x = document.getElementById("night_mode").checked;
+    	 if(x){
+	    	document.getElementById("theBody").style.filter = "invert(100%)"
+	    	document.getElementById("theBody").style.background = 'rgb(0,0,0)'
+	    }
+	    else{
+	    	document.getElementById("theBody").style.filter = "invert(00%)"
+	    	document.getElementById("theBody").style.background = 'rgb(255,255,255)'	
+	    }
+    }
+
+    function submitChangeColor(){
+		document.theForm.submit()
+    }
+
+</script>
 </body>
 
 

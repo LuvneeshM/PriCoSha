@@ -1,14 +1,21 @@
 <html>
 <head>
+	<style type="text/css">
+	
+		table, th, td{
+			border: 1px solid black;
+		}
+
+		body{
+			filter: invert(0%);
+			background: rgb(255,255,255)
+		}
+	
+	</style>
 </head>
-<body>
+<body id="theBody">
 <h1>Welcome {{username}}</h1> 
 <h2>Make a Post</h2>
-<style type="text/css">
-	table, th, td{
-		border: 1px solid black;
-	}
-</style>
 
 <form action = "/makePost" method="POST">
 	<input type = "text" name = "title" placeholder = "Title" required/></br>
@@ -29,6 +36,31 @@
 
 <a href="/home">Go back</a>
 <a href="/logout">Logout</a>
+
+<script
+	  src="https://code.jquery.com/jquery-2.2.4.min.js"
+	  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+	  crossorigin="anonymous">
+</script>
+<script type="text/javascript">
+	    // wait for dom to load
+    $(document).ready(function() {
+    	invertColors()
+    });
+
+    function invertColors(){
+    	 var x = {{colors[0].night_mode}};
+    	 if(x == 1){
+	    	document.getElementById("theBody").style.filter = "invert(100%)"
+	    	document.getElementById("theBody").style.background = 'rgb(0,0,0)'
+	    }
+	    else{
+	    	document.getElementById("theBody").style.filter = "invert(00%)"
+	    	document.getElementById("theBody").style.background = 'rgb(255,255,255)'	
+	    }
+    }
+
+</script>
 
 </body>
 
