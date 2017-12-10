@@ -209,6 +209,7 @@ def makePost():
 			query_2 = "SELECT max(tb.id) as maxId FROM (SELECT username, max(id) as id FROM Content Group By username) as tb WHERE tb.username=%s"
 			cursor.execute(query_2, (username))
 			data = cursor.fetchall()
+			print("ee",request.args.get('friend_group_list'))
 			insertContent = "INSERT INTO Share VALUES({},'{}','{}')".format(data[0]['maxId'], str(fr) ,username)
 			cursor.execute(insertContent)
 			data = cursor.fetchall()
@@ -362,6 +363,8 @@ def createConfirm():
 	colorMode = cursor.fetchall()
 
 	group_name = request.form.get('to_make_group')
+	group_name = group_name.replace(" ", "_")
+	
 	group_description = request.form.get('group_description')
 
 	query = "SELECT group_name, username FROM FriendGroup WHERE group_name = '{}' AND username = '{}'".format(group_name, username)
