@@ -57,7 +57,15 @@
 {% endfor %}
 </table>
 
+<input type = "button" value = "Make me public!!" onclick="askPublic()")/>
 <a href="/logout">Logout</a>
+<script>
+	function askPublic() {
+		public = confirm("Warning: this will make all of your posts public. You cannot undo this. Are you sure you want to go public?");
+		if (public == true) 
+			window.location = "/publicconfirm";
+	}
+</script>
 <script
 	  src="https://code.jquery.com/jquery-2.2.4.min.js"
 	  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="

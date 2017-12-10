@@ -112,6 +112,37 @@ def home():
 	return render_template('home.html', username=username, posts=data, colors=colorMode)
 
 # ################################################################
+# Make a user public
+# ################################################################
+@app.route('/publicconfirm')
+def publicConfirm():
+	username = session['username']
+	cursor = conn.cursor();
+	#what color type
+	query = "SELECT night_mode FROM NightMode WHERE username = %s"
+	cursor.execute(query, (username))
+	colorMode = cursor.fetchall()
+
+	# get the ids of content that the user posted
+	query = "SELECT id FROM Content WHERE username = '{}'".format(username)
+	cursor.execute(query)
+	data = cursor.fetchall()
+
+	# has the person even posted anything?
+	if (len(data) == 0):
+		status = "Failed. You don't even have any posts!"
+		return render_template('publicconfirm.html', username=username, confirmed=status, colors=colorMode)
+
+	query = "UPDATE Content SET public = 1 WHERE username = '{}'".format(username)
+	cursor.execute(query)
+	query = "DELETE FROM Share WHERE username = '{}'".format(username)
+	cursor.execute(query)
+	conn.commit()
+
+	status = "Success! You are now public!"
+	return render_template('publicconfirm.html', username=username, confirmed=status, colors=colorMode)
+
+# ################################################################
 # Manage and see tags
 # ################################################################
 @app.route('/managetags/<int:content_id>/<string:option>/<string:taggee>/<string:tagger>', methods=['GET', 'POST'])
@@ -158,6 +189,7 @@ def post():
 
 	cursor.close()
 	return render_template('post.html', username=username, friends=data,colors=colorMode)
+
 @app.route('/makePost', methods=['GET','POST'])
 def makePost():
 	username  = session['username']
@@ -214,6 +246,7 @@ def tagging(content_id):
 
 	cursor.close()
 	return render_template('tagging.html', username=username, id=content_id, persons=data,colors=colorMode)
+	
 @app.route('/taggingconfirm/<int:content_id>', methods=['GET', 'POST'])
 def taggingConfirm(content_id):
 	username = session['username']
