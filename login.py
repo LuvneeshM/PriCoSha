@@ -97,8 +97,6 @@ def registerAuth():
 def home():
 	username = session['username']
 	cursor = conn.cursor();
-	#query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
-	#query = 'SELECT username, timest, content_name FROM Content WHERE (username = %s OR public = 1) ORDER BY timest DESC'
 	query = "SELECT Content.id, Content.timest as post_timest, Content.username as post_username, content_name, file_path, GROUP_CONCAT(DISTINCT(SELECT CONCAT(first_name,' ',last_name) as name FROM Person WHERE Tag.username_taggee = Person.username AND status = 1)) as tagged, GROUP_CONCAT(DISTINCT CONCAT(Comment.username, ' ', Comment.timest, ' ', Comment.comment_text)) as comment FROM Content LEFT JOIN Tag on Content.id = Tag.id LEFT JOIN Comment ON Comment.id = Content.id WHERE (public = 1 OR (%s IN (SELECT username FROM member WHERE (member.group_name IN ( SELECT posterMember.group_name FROM member as posterMember WHERE posterMember.username= Content.username))) AND Content.id IN ( SELECT id FROM Share WHERE group_name IN ( SELECT group_name FROM Member WHERE username = %s)))) GROUP BY Content.id"
 	cursor.execute(query, (username, username))
 	data = cursor.fetchall()
@@ -153,7 +151,6 @@ def manageTags(content_id, option, taggee, tagger):
 
 	if option == 'accept':
 		query = "UPDATE Tag SET status = 1 WHERE id = {} AND username_taggee = '{}' AND username_tagger = '{}'".format(content_id, taggee, tagger)
-		print("THIS IS ME!", query)
 		cursor.execute(query)
 	if option == 'decline':
 		query = "DELETE FROM Tag WHERE id = {} AND username_taggee = '{}' AND username_tagger = '{}'".format(content_id, taggee, tagger)
@@ -198,10 +195,8 @@ def makePost():
 	query = None
 	#update the content table
 	if request.form.get('path') != "":
-		print("PATH FULL")
 		query = "INSERT INTO Content (username, timest, file_path, content_name, public) VALUES('{}','{}','{}','{}',{})".format(username, str(time.strftime('%Y-%m-%d %H:%M:%S')), str(request.form.get('path')), str(request.form.get('title')), (1 if amIPublic != None else 0) )
 	else:
-		print("PATH EMPTY")
 		title_c = request.form.get('title')
 		query = "INSERT INTO Content (username, timest, content_name, public) VALUES('{}','{}','{}',{})".format(username, str(time.strftime('%Y-%m-%d %H:%M:%S')), title_c, (1 if amIPublic != None else 0) )
 	cursor.execute(query)
@@ -210,12 +205,7 @@ def makePost():
 
 	#person only likes private things
 	if amIPublic == None:
-			
-		print("urg",request.form.getlist('friend_group_list'))
-
 		for fr in request.form.getlist('friend_group_list'):
-			print("I SHALL BE NOT PUBLIC")
-			print("fr is", fr)
 			query_2 = "SELECT max(tb.id) as maxId FROM (SELECT username, max(id) as id FROM Content Group By username) as tb WHERE tb.username=%s"
 			cursor.execute(query_2, (username))
 			data = cursor.fetchall()
@@ -246,7 +236,7 @@ def tagging(content_id):
 
 	cursor.close()
 	return render_template('tagging.html', username=username, id=content_id, persons=data,colors=colorMode)
-	
+
 @app.route('/taggingconfirm/<int:content_id>', methods=['GET', 'POST'])
 def taggingConfirm(content_id):
 	username = session['username']
@@ -401,8 +391,6 @@ def createConfirm():
 @app.route('/nightMode', methods=['GET', 'POST'])
 def nightMode():
 	username = session['username']
-	print("hi",request.form)
-	print ("invert is", request.form.get('invert'))
 	cursor = conn.cursor();
 	if(request.form.get('invert') == 'on'):
 		query = "UPDATE NightMode SET night_mode = 1 WHERE username = %s"

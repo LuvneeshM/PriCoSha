@@ -16,10 +16,11 @@
 <body id="theBody">
 <h1>Welcome {{username}}</h1> 
 <h2>Make a Post</h2>
+<p>The character limit on image URL is 50. (Hint: use tinyurl.com)</p></br>
 
 <form action = "/makePost" method="POST">
 	<input type = "text" name = "title" placeholder = "Title" required/></br>
-	<input type = "text" name = "path" placeholder = "URL only" /></br>
+	<input type = "text" name = "path" placeholder = "URL only" maxlength="50"/></br>
 	<input type = "checkbox" name = "public" />Public?</br>
 	<fieldset>
 	{% for friend in friends %}
