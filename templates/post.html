@@ -17,7 +17,7 @@
 <h1>Welcome {{username}}</h1> 
 <h2>Make a Post</h2>
 
-<form action = "/makePost" method="POST">
+<form  name="theForm" id="theForm" action = "/makePost" method="POST">
 	<input type = "text" name = "title" placeholder = "Title" required/></br>
 	<input type = "text" name = "path" placeholder = "URL only" /></br>
 	<input type = "checkbox" name = "public" />Public?</br>
@@ -30,7 +30,7 @@
 	</ul>
 	{% endfor %}
 	</fieldset>
-	<input type = "submit" value = "Submit"/>
+	<input type = "button" value = "Submit" onclick="sendNow()" />
 
 </form>
 
@@ -59,6 +59,15 @@
 	    	document.getElementById("theBody").style.background = 'rgb(255,255,255)'	
 	    }
     }
+
+    function sendNow(){
+    	if( $('#theForm input[type=checkbox]:checked').length > 0){
+    		document.theForm.submit()
+    	}else{
+    		alert("You must either select a friend group or make the post public.")
+    	}
+    }
+
 
 </script>
 
